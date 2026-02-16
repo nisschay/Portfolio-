@@ -1,0 +1,101 @@
+// Prisma Schema for Portfolio Database
+// Run: npx prisma migrate dev --name init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// PROJECT MODEL
+// Stores portfolio projects with metadata
+// ============================================
+model Project {
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  description     String   // Short description for cards
+  longDescription String   @db.Text // Full description for detail page
+  tags            String[] // Technology tags
+  category        String   // "ml", "fullstack", "data"
+  year            Int
+  featured        Boolean  @default(false)
+  imageUrl        String?
+  demoUrl         String?
+  githubUrl       String?
+  metrics         Json?    // { "accuracy": "94.2%", "users": "10k+" }
+  order           Int      @default(0) // For custom ordering
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([featured])
+  @@index([slug])
+}
+
+// ============================================
+// BLOG POST MODEL
+// Rich content blog posts with publishing states
+// ============================================
+model BlogPost {
+  id          String    @id @default(uuid())
+  title       String
+  slug        String    @unique
+  excerpt     String    // Short preview text
+  content     String    @db.Text // Rich HTML content
+  coverImage  String?
+  author      String    @default("Nisschay Khandelwal")
+  tags        String[]
+  published   Boolean   @default(false)
+  publishedAt DateTime?
+  views       Int       @default(0)
+  readTime    Int       // Estimated reading time in minutes
+  
+  // SEO fields
+  metaTitle       String?
+  metaDescription String?
+  ogImage         String?
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([published])
+  @@index([slug])
+  @@index([tags])
+}
+
+// ============================================
+// CONTACT MODEL
+// Contact form submissions
+// ============================================
+model Contact {
+  id        String   @id @default(uuid())
+  name      String
+  email     String
+  subject   String?
+  message   String   @db.Text
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([read])
+  @@index([createdAt])
+}
+
+// ============================================
+// ADMIN MODEL
+// Admin users for CMS access
+// ============================================
+model Admin {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String   // bcrypt hashed
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+}
