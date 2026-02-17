@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { SOCIAL_LINKS, NAV_LINKS } from '@/lib/constants';
 import { GithubIcon, LinkedinIcon, TwitterIcon } from '@/components/ui/Icons';
 
@@ -10,6 +13,10 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 
 export function Footer() {
   const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // Hide footer on admin pages
+  if (pathname.startsWith('/admin')) return null;
 
   return (
     <footer className="bg-ink text-base py-16">

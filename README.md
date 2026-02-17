@@ -107,6 +107,16 @@ npm run seed
 
 ### 4. Run Development Servers
 
+**Quick Start (Recommended):**
+```bash
+# Start both servers
+./start
+
+# Stop both servers
+./stop.sh
+```
+
+**Alternative (npm scripts):**
 ```bash
 # from repository root (runs backend + frontend together)
 npm run dev
@@ -251,6 +261,54 @@ NODE_ENV=production
 # Frontend
 NEXT_PUBLIC_API_URL=https://api.yourdomain.com/api
 NEXT_PUBLIC_SITE_URL=https://yourdomain.com
+```
+
+## ➕ Adding Projects
+
+To add your GitHub projects to the portfolio:
+
+### Via Admin Panel (Recommended)
+1. Navigate to http://localhost:3000/admin/login
+2. Login with admin credentials
+3. Go to **Projects** → **Add New Project**
+4. Fill in details:
+   - **Title**: Project name
+   - **Description**: Short summary
+   - **Long Description**: Detailed info (supports HTML)
+   - **GitHub URL**: `https://github.com/nisschay/your-repo`
+   - **Demo URL**: Live demo link (if available)
+   - **Category**: ml, fullstack, or data
+   - **Tags**: Technologies used
+   - **Image**: Upload a cover image
+5. Save the project
+
+### Via API
+```bash
+# Get auth token
+TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@nisschay.dev","password":"Admin@123"}' | jq -r '.token')
+
+# Create project
+curl -X POST http://localhost:5000/api/admin/projects \
+  -H "Authorization: Bearer $TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "RAG Education System",
+    "slug": "rag-education-system",
+    "description": "AI-powered education system using Retrieval-Augmented Generation",
+    "longDescription": "<h2>Overview</h2><p>Details about the project...</p>",
+    "category": "ml",
+    "tags": ["Python", "RAG", "LangChain", "AI"],
+    "githubUrl": "https://github.com/nisschay/rag-Education-system",
+    "featured": true
+  }'
+```
+
+### Via Database Seed
+Add entries to `backend/prisma/seed.ts` and run:
+```bash
+cd backend && npm run seed
 ```
 
 ## 📄 License
