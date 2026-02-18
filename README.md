@@ -138,7 +138,7 @@ npm run dev:frontend
 
 ### Default Admin Credentials
 - Email: admin@nisschay.dev
-- Password: Admin@123
+- Password: Nisschay@2026!
 
 ## 🐳 Docker Deployment
 
@@ -287,7 +287,7 @@ To add your GitHub projects to the portfolio:
 # Get auth token
 TOKEN=$(curl -s -X POST http://localhost:5000/api/auth/login \
   -H "Content-Type: application/json" \
-  -d '{"email":"admin@nisschay.dev","password":"Admin@123"}' | jq -r '.token')
+  -d '{"email":"admin@nisschay.dev","password":"Nisschay@2026!"}' | jq -r '.token')
 
 # Create project
 curl -X POST http://localhost:5000/api/admin/projects \
