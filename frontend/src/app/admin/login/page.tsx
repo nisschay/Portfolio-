@@ -43,7 +43,9 @@ export default function AdminLoginPage() {
       // Redirect to dashboard
       router.push('/admin/dashboard');
     } catch (err) {
-      setError('Invalid email or password');
+      const message = err instanceof Error ? err.message : 'Login failed';
+      setError(message);
+      console.error('Login error:', err);
     } finally {
       setIsSubmitting(false);
     }
