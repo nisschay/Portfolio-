@@ -4,12 +4,13 @@ import { BlogPostDetail } from '@/components/blog/BlogPostDetail';
 import type { Metadata } from 'next';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const { data: post } = await getBlogPost(params.slug);
+    const { slug } = await params;
+    const { data: post } = await getBlogPost(slug);
     return {
       title: post.metaTitle || post.title,
       description: post.metaDescription || post.excerpt,
@@ -49,7 +50,8 @@ export const revalidate = 60;
 
 export default async function BlogPostPage({ params }: Props) {
   try {
-    const { data: post } = await getBlogPost(params.slug);
+    const { slug } = await params;
+    const { data: post } = await getBlogPost(slug);
     
     return <BlogPostDetail post={post} />;
   } catch {

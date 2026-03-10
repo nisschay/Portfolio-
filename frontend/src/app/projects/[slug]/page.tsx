@@ -4,12 +4,13 @@ import { ProjectDetail } from '@/components/projects/ProjectDetail';
 import type { Metadata } from 'next';
 
 interface Props {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   try {
-    const project = await getProject(params.slug);
+    const { slug } = await params;
+    const project = await getProject(slug);
     return {
       title: project.title,
       description: project.description,
@@ -42,7 +43,8 @@ export const revalidate = 60;
 
 export default async function ProjectPage({ params }: Props) {
   try {
-    const project = await getProject(params.slug);
+    const { slug } = await params;
+    const project = await getProject(slug);
 
     return <ProjectDetail project={project} />;
   } catch {
