@@ -3,7 +3,7 @@
  * Centralized API communication with type safety
  */
 
-import { API_URL } from './constants';
+import { API_URL, SITE_URL } from './constants';
 import type {
   Project,
   ProjectListItem,
@@ -20,6 +20,16 @@ import type {
   ApiResponse,
   PaginatedResponse,
 } from '@/types';
+
+// Helper to get the correct base URL for API calls
+function getBaseUrl(): string {
+  // Server-side: use absolute URL
+  if (typeof window === 'undefined') {
+    return `${SITE_URL}/api`;
+  }
+  // Client-side: use relative URL
+  return '/api';
+}
 
 // ============================================
 // HTTP CLIENT
@@ -207,8 +217,24 @@ class ApiClient {
 export const api = new ApiClient(API_URL);
 
 // ============================================
-// PUBLIC API METHODS
+// PUBLIC API METHODS (Server-side compatible)
 // ============================================
+
+// Helper for server-side compatible fetch
+async function serverFetch<T>(endpoint: string): Promise<T> {
+  const baseUrl = getBaseUrl();
+  const response = await fetch(`${baseUrl}${endpoint}`, {
+    method: 'GET',
+    headers: { 'Content-Type': 'application/json' },
+    cache: 'no-store', // Ensure fresh data
+  });
+  
+  if (!response.ok) {
+    throw new Error(`API error: ${response.status}`);
+  }
+  
+  return response.json();
+}
 
 // Projects
 export async function getProjects(params?: {
@@ -229,12 +255,12 @@ export async function getProjects(params?: {
 
   const query = searchParams.toString();
   const endpoint = `/projects${query ? `?${query}` : ''}`;
-  const response = await api.get<ApiResponse<ProjectListItem[]>>(endpoint);
+  const response = await serverFetch<ApiResponse<ProjectListItem[]>>(endpoint);
   return response.data;
 }
 
 export async function getProject(slug: string): Promise<Project> {
-  const response = await api.get<ApiResponse<Project>>(`/projects/${slug}`);
+  const response = await serverFetch<ApiResponse<Project>>(`/projects/${slug}`);
   return response.data;
 }
 
@@ -253,14 +279,14 @@ export async function getBlogPosts(params?: {
 
   const query = searchParams.toString();
   const endpoint = `/blog${query ? `?${query}` : ''}`;
-  return api.get<PaginatedResponse<BlogPostListItem>>(endpoint);
+  return serverFetch<PaginatedResponse<BlogPostListItem>>(endpoint);
 }
 
 export async function getBlogPost(slug: string): Promise<{
   data: BlogPost;
   related: BlogPostListItem[];
 }> {
-  const response = await api.get<{
+  const response = await serverFetch<{
     success: boolean;
     data: BlogPost;
     related: BlogPostListItem[];
@@ -269,19 +295,19 @@ export async function getBlogPost(slug: string): Promise<{
 }
 
 export async function getBlogTags(): Promise<string[]> {
-  const response = await api.get<ApiResponse<string[]>>('/blog/tags');
+  const response = await serverFetch<ApiResponse<string[]>>('/blog/tags');
+  return response.data;
+}
+
+// Stats
+export async function getStats(): Promise<{ projects: number; blogPosts: number }> {
+  const response = await serverFetch<ApiResponse<{ projects: number; blogPosts: number }>>('/stats');
   return response.data;
 }
 
 // Contact
 export async function submitContact(data: CreateContactInput): Promise<{ id: string }> {
   const response = await api.post<ApiResponse<{ id: string; createdAt: string }>>('/contact', data);
-  return response.data;
-}
-
-// Stats
-export async function getStats(): Promise<{ projects: number; blogPosts: number }> {
-  const response = await api.get<ApiResponse<{ projects: number; blogPosts: number }>>('/stats');
   return response.data;
 }
 

@@ -2,9 +2,23 @@
  * Application Constants
  */
 
-// API Configuration - now using Next.js API routes on the same origin
+// Site URL - handles Vercel deployments and local development
+export const SITE_URL = 
+  process.env.NEXT_PUBLIC_SITE_URL || 
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
+// API Configuration - relative URL (works for client-side)
 export const API_URL = '/api';
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+
+// Get absolute API URL for server-side fetch
+export function getAbsoluteApiUrl(endpoint: string): string {
+  // Server-side needs absolute URL
+  if (typeof window === 'undefined') {
+    return `${SITE_URL}${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+  }
+  // Client-side can use relative URL
+  return endpoint.startsWith('/api') ? endpoint : `/api${endpoint.startsWith('/') ? endpoint : `/${endpoint}`}`;
+}
 
 // Site Information
 export const SITE_NAME = 'Nisschay Khandelwal';

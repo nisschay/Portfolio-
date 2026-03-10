@@ -30,10 +30,8 @@ stop_by_pid_file() {
   rm -f "$pid_file"
 }
 
-stop_by_pid_file "backend" "$RUN_DIR/backend.pid"
 stop_by_pid_file "frontend" "$RUN_DIR/frontend.pid"
 
-fuser -k 5000/tcp 2>/dev/null || true
 fuser -k 3000/tcp 2>/dev/null || true
 
-echo "Stopped services on ports 5000 and 3000."
+echo "Stopped services on port 3000."
