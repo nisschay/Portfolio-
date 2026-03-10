@@ -129,8 +129,7 @@ export function isClient(): boolean {
  * Get API base URL
  */
 export function getApiUrl(path: string): string {
-  const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
-  return `${baseUrl}${path}`;
+  return `/api${path}`;
 }
 
 /**
@@ -139,10 +138,8 @@ export function getApiUrl(path: string): string {
 export function getImageUrl(path: string | null | undefined): string {
   if (!path) return '/placeholder.jpg';
   if (path.startsWith('http')) return path;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-  // Remove /api from the URL for static files
-  const baseUrl = apiUrl.replace('/api', '');
-  return `${baseUrl}${path}`;
+  // For legacy local paths, return as-is (shouldn't happen with Supabase Storage)
+  return path;
 }
 
 /**

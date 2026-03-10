@@ -2,8 +2,8 @@
  * Application Constants
  */
 
-// API Configuration
-export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
+// API Configuration - now using Next.js API routes on the same origin
+export const API_URL = '/api';
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
 
 // Site Information
