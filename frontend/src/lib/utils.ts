@@ -134,10 +134,23 @@ export function getApiUrl(path: string): string {
 
 /**
  * Get full image URL
+ * Converts GitHub blob URLs to raw URLs for direct image access
  */
 export function getImageUrl(path: string | null | undefined): string {
   if (!path) return '/placeholder.jpg';
-  if (path.startsWith('http')) return path;
+  
+  if (path.startsWith('http')) {
+    // Convert GitHub blob URLs to raw URLs
+    // e.g., https://github.com/user/repo/blob/main/image.png
+    // becomes https://raw.githubusercontent.com/user/repo/main/image.png
+    if (path.includes('github.com') && path.includes('/blob/')) {
+      return path
+        .replace('github.com', 'raw.githubusercontent.com')
+        .replace('/blob/', '/');
+    }
+    return path;
+  }
+  
   // For legacy local paths, return as-is (shouldn't happen with Supabase Storage)
   return path;
 }

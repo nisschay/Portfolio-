@@ -35,12 +35,39 @@ export function BlogPostDetail({ post }: BlogPostDetailProps) {
 
       {/* Header */}
       <header className="mb-12">
-        {/* Tags */}
-        <motion.div
+        {/* Title */}
+        <motion.h1
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="flex flex-wrap gap-2 mb-6"
+          className="font-serif text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6"
+        >
+          {post.title}
+        </motion.h1>
+
+        {/* Meta */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex items-center gap-6 text-sm text-secondary mb-6"
+        >
+          <span className="flex items-center gap-2">
+            <CalendarIcon className="w-4 h-4" />
+            {formatDate(post.publishedAt || post.createdAt)}
+          </span>
+          <span className="flex items-center gap-2">
+            <ClockIcon className="w-4 h-4" />
+            {readTime} min read
+          </span>
+        </motion.div>
+
+        {/* Tags (below title and meta) */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+          className="flex flex-wrap gap-2"
         >
           {post.tags.map((tag) => (
             <span
@@ -52,33 +79,6 @@ export function BlogPostDetail({ post }: BlogPostDetailProps) {
             </span>
           ))}
         </motion.div>
-
-        {/* Title */}
-        <motion.h1
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="font-serif text-4xl md:text-5xl font-semibold tracking-tight text-ink mb-6"
-        >
-          {post.title}
-        </motion.h1>
-
-        {/* Meta */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.3 }}
-          className="flex items-center gap-6 text-sm text-secondary"
-        >
-          <span className="flex items-center gap-2">
-            <CalendarIcon className="w-4 h-4" />
-            {formatDate(post.publishedAt || post.createdAt)}
-          </span>
-          <span className="flex items-center gap-2">
-            <ClockIcon className="w-4 h-4" />
-            {readTime} min read
-          </span>
-        </motion.div>
       </header>
 
       {/* Cover Image */}
@@ -86,7 +86,7 @@ export function BlogPostDetail({ post }: BlogPostDetailProps) {
         <motion.div
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.3 }}
+          transition={{ duration: 0.8, delay: 0.4 }}
           className="relative aspect-video rounded-2xl overflow-hidden bg-alt mb-12"
         >
           <Image
@@ -104,7 +104,7 @@ export function BlogPostDetail({ post }: BlogPostDetailProps) {
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8, delay: 0.4 }}
+        transition={{ duration: 0.8, delay: 0.5 }}
         className="prose prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />

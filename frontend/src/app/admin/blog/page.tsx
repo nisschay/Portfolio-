@@ -29,8 +29,13 @@ function AdminBlogContent() {
     try {
       const response = await api.getBlogPosts();
       setPosts(response.data);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to fetch posts:', error);
+      // Handle token expiration - redirect to login
+      if (error instanceof Error && (error.message.includes('UNAUTHORIZED') || error.message.includes('expired') || error.message.includes('Invalid'))) {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      }
     } finally {
       setIsLoading(false);
     }

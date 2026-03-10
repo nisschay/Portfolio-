@@ -29,8 +29,13 @@ function AdminProjectsContent() {
     try {
       const data = await api.getProjects();
       setProjects(data);
-    } catch (error) {
+    } catch (error: unknown) {
       console.error('Failed to fetch projects:', error);
+      // Handle token expiration - redirect to login
+      if (error instanceof Error && (error.message.includes('UNAUTHORIZED') || error.message.includes('expired') || error.message.includes('Invalid'))) {
+        localStorage.removeItem('admin_token');
+        router.push('/admin/login');
+      }
     } finally {
       setIsLoading(false);
     }
