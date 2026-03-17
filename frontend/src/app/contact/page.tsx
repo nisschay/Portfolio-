@@ -46,10 +46,10 @@ export default function ContactPage() {
                   Email
                 </span>
                 <a 
-                  href="mailto:hello@nisschay.dev"
+                  href="mailto:nisschaykhandelwal@gmail.com"
                   className="block text-lg text-ink hover:text-accent transition-colors mt-1"
                 >
-                  hello@nisschay.dev
+                  nisschaykhandelwal@gmail.com
                 </a>
               </motion.div>
               
@@ -62,7 +62,7 @@ export default function ContactPage() {
                   Location
                 </span>
                 <p className="text-lg text-ink mt-1">
-                  San Francisco, CA
+                  Bangalore, India
                 </p>
               </motion.div>
             </div>
