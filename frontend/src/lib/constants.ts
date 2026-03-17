@@ -37,7 +37,7 @@ export const NAV_LINKS = [
 export const SOCIAL_LINKS = [
   { href: 'https://github.com/nisschay', label: 'GitHub', icon: 'github' as const },
   { href: 'https://www.linkedin.com/in/nisschay-khandelwal-936226192/', label: 'LinkedIn', icon: 'linkedin' as const },
-  { href: 'https://twitter.com/nisschay', label: 'Twitter', icon: 'twitter' as const },
+  { href: 'https://x.com/Nisschayyy', label: 'Twitter', icon: 'twitter' as const },
 ];
 
 // Project Categories
