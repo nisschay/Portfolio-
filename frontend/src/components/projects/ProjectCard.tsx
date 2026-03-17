@@ -32,7 +32,7 @@ export function ProjectCard({ project, index = 0 }: ProjectCardProps) {
               src={getImageUrl(project.imageUrl)}
               alt={project.title}
               fill
-              className="object-cover transition-transform duration-700 group-hover:scale-105"
+              className="object-contain transition-transform duration-700 group-hover:scale-105"
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-accent/20 to-accent/5" />
