@@ -79,7 +79,7 @@ export function Footer() {
               })}
             </div>
             <p className="mt-6 text-base/40 text-xs">
-              nisschay@example.com
+              nisschaykhandelwal@gmail.com
             </p>
           </div>
         </div>
