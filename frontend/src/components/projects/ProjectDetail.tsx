@@ -106,13 +106,15 @@ export function ProjectDetail({ project }: ProjectDetailProps) {
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.3 }}
-          className="relative aspect-video rounded-2xl overflow-hidden bg-alt mb-16"
+          className="relative h-[260px] sm:h-[380px] lg:h-[560px] rounded-2xl overflow-hidden bg-alt border border-ink/10 mb-16"
         >
           <Image
             src={getImageUrl(project.imageUrl)}
             alt={project.title}
             fill
-            className="object-cover"
+            className="object-contain p-2 sm:p-4"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 92vw, 1200px"
+            quality={90}
             priority
           />
         </motion.div>
