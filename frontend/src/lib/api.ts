@@ -75,15 +75,36 @@ class ApiClient {
       headers,
     });
 
-    const data = await response.json();
+    let data: unknown = null;
+    try {
+      data = await response.json();
+    } catch {
+      data = null;
+    }
 
     if (!response.ok) {
-      const error = new Error(data.error?.message || 'An error occurred');
-      (error as Error & { code?: string }).code = data.error?.code;
+      const responseError = (data as {
+        error?: {
+          code?: string;
+          message?: string;
+          details?: { errors?: Array<{ field: string; message: string }> };
+        };
+      } | null)?.error;
+
+      const details = responseError?.details?.errors;
+      const detailMessage = Array.isArray(details) && details.length > 0
+        ? details.map((item) => `${item.field}: ${item.message}`).join(', ')
+        : '';
+
+      const baseMessage = responseError?.message || `Request failed with status ${response.status}`;
+      const error = new Error(detailMessage ? `${baseMessage}: ${detailMessage}` : baseMessage);
+      (error as Error & { code?: string; details?: unknown; status?: number }).code = responseError?.code;
+      (error as Error & { code?: string; details?: unknown; status?: number }).details = responseError?.details;
+      (error as Error & { code?: string; details?: unknown; status?: number }).status = response.status;
       throw error;
     }
 
-    return data;
+    return data as T;
   }
 
   // GET request

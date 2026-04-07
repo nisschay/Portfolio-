@@ -142,6 +142,7 @@ function ProjectForm({
   onCancel: () => void;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: project?.title || '',
     slug: project?.slug || '',
@@ -156,26 +157,57 @@ function ProjectForm({
     featured: project?.featured || false,
   });
 
+  const normalizeSlug = (value: string) => {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
+  const normalizeCategory = (value: string): 'ml' | 'fullstack' | 'data' => {
+    const compact = value.trim().toLowerCase().replace(/[^a-z]/g, '');
+    if (compact === 'ml' || compact === 'data' || compact === 'fullstack') {
+      return compact;
+    }
+    return 'fullstack';
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('admin_token');
     if (!token) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
+      const normalizedSlug = normalizeSlug(formData.slug || formData.title);
+      if (!normalizedSlug) {
+        setSubmitError('Slug is required and can only contain letters, numbers, and hyphens.');
+        return;
+      }
+
+      const parsedYear = Number(formData.year);
+      const trimmedImageUrl = formData.imageUrl.trim();
+      const trimmedDemoUrl = formData.demoUrl.trim();
+      const trimmedGithubUrl = formData.githubUrl.trim();
       const payload = {
         title: formData.title,
-        slug: formData.slug,
+        slug: normalizedSlug,
         description: formData.description,
         longDescription: formData.longDescription,
-        imageUrl: formData.imageUrl || null,
+        imageUrl: trimmedImageUrl ? trimmedImageUrl : null,
         tags: formData.tags.split(',').map((s: string) => s.trim()).filter(Boolean),
-        category: formData.category as 'ml' | 'fullstack' | 'data',
-        year: formData.year,
-        demoUrl: formData.demoUrl || null,
-        githubUrl: formData.githubUrl || null,
+        category: normalizeCategory(formData.category),
+        year: Number.isFinite(parsedYear) ? parsedYear : new Date().getFullYear(),
+        demoUrl: trimmedDemoUrl ? trimmedDemoUrl : null,
+        githubUrl: trimmedGithubUrl ? trimmedGithubUrl : null,
         featured: formData.featured,
       };
+
+      setFormData((prev) => ({ ...prev, slug: normalizedSlug }));
 
       if (project) {
         await api.updateProject(project.id, payload, token);
@@ -183,7 +215,8 @@ function ProjectForm({
         await api.createProject(payload, token);
       }
       onSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to save project.');
       console.error('Failed to save project:', error);
     } finally {
       setIsSubmitting(false);
@@ -299,6 +332,12 @@ function ProjectForm({
         />
         <span className="text-sm">Featured project</span>
       </label>
+
+      {submitError && (
+        <p className="px-3 py-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+          {submitError}
+        </p>
+      )}
 
       <button
         type="submit"

@@ -151,6 +151,7 @@ function BlogForm({
   onCancel: () => void;
 }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: post?.title || '',
     slug: post?.slug || '',
@@ -161,17 +162,42 @@ function BlogForm({
     published: post?.published || false,
   });
 
+  const normalizeSlug = (value: string) => {
+    return value
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9\s-]/g, '')
+      .replace(/\s+/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-|-$/g, '');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = localStorage.getItem('admin_token');
     if (!token) return;
 
     setIsSubmitting(true);
+    setSubmitError(null);
     try {
+      const normalizedSlug = normalizeSlug(formData.slug || formData.title);
+      if (!normalizedSlug) {
+        setSubmitError('Slug is required and can only contain letters, numbers, and hyphens.');
+        return;
+      }
+
+      const trimmedCoverImage = formData.coverImage.trim();
       const payload = {
-        ...formData,
+        title: formData.title,
+        slug: normalizedSlug,
+        excerpt: formData.excerpt,
+        content: formData.content,
+        coverImage: trimmedCoverImage ? trimmedCoverImage : null,
+        published: formData.published,
         tags: formData.tags.split(',').map((s) => s.trim()).filter(Boolean),
       };
+
+      setFormData((prev) => ({ ...prev, slug: normalizedSlug }));
 
       if (post) {
         await api.updateBlogPost(post.id, payload, token);
@@ -179,7 +205,8 @@ function BlogForm({
         await api.createBlogPost(payload, token);
       }
       onSuccess();
-    } catch (error) {
+    } catch (error: unknown) {
+      setSubmitError(error instanceof Error ? error.message : 'Failed to save post.');
       console.error('Failed to save post:', error);
     } finally {
       setIsSubmitting(false);
@@ -264,6 +291,12 @@ function BlogForm({
         />
         <span className="text-sm">Publish immediately</span>
       </label>
+
+      {submitError && (
+        <p className="px-3 py-2 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
+          {submitError}
+        </p>
+      )}
 
       <button
         type="submit"
